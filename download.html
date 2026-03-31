@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마케케 다운로드 — macOS & Windows</title>
+<link rel="icon" type="image/png" href="images/logo-icon.png">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --accent: #ff8c00;
+  --accent-dark: #ff6b00;
+  --text: #1a1a1a;
+  --text-light: rgba(0,0,0,0.5);
+  --white: #ffffff;
+}
+
+html { -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: #f5f5f7;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Nav */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 60px; height: 72px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.nav-logo {
+  font-size: 22px; font-weight: 800; color: var(--text);
+  text-decoration: none; letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--accent); }
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+.nav-link {
+  text-decoration: none; color: var(--text); font-size: 14px;
+  font-weight: 500; opacity: 0.6; transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 1; }
+
+/* Auth */
+.login-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px; background: var(--text); color: var(--white);
+  border-radius: 100px; font-size: 14px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+.user-profile {
+  display: none; align-items: center; gap: 10px;
+}
+.user-profile img {
+  width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+}
+.user-profile span { font-size: 14px; font-weight: 600; }
+
+.logout-btn {
+  display: none; padding: 6px 16px; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 100px; background: #fff; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.logout-btn:hover { background: rgba(0,0,0,0.04); }
+
+/* Main */
+.main {
+  max-width: 800px; margin: 0 auto; padding: 120px 24px 80px;
+}
+
+.hero-title {
+  font-size: clamp(28px, 4vw, 44px); font-weight: 800;
+  line-height: 1.2; letter-spacing: -1px; margin-bottom: 8px;
+  text-align: center;
+}
+.hero-title .accent { color: var(--accent); }
+
+.hero-desc {
+  font-size: 16px; color: var(--text-light); text-align: center;
+  margin-bottom: 48px;
+}
+
+.version-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 20px; background: rgba(255,140,0,0.1);
+  border-radius: 100px; font-size: 14px; font-weight: 700;
+  color: var(--accent); margin-bottom: 32px;
+}
+
+/* Login required */
+.login-required {
+  text-align: center; padding: 60px 24px;
+  background: #fff; border-radius: 20px;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.05);
+}
+.login-required p {
+  font-size: 16px; color: var(--text-light); margin-bottom: 24px;
+}
+
+/* Download cards */
+.download-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-bottom: 48px;
+}
+
+.download-card {
+  background: #fff; border-radius: 20px; padding: 40px 32px;
+  text-align: center; box-shadow: 0 2px 30px rgba(0,0,0,0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.download-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+.download-card .icon {
+  font-size: 48px; margin-bottom: 16px;
+}
+
+.download-card h3 {
+  font-size: 20px; font-weight: 700; margin-bottom: 4px;
+}
+
+.download-card .ext {
+  font-size: 13px; color: var(--text-light); margin-bottom: 24px;
+}
+
+.download-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
+  color: #fff; border: none; border-radius: 100px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+}
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,140,0,0.35);
+}
+
+.download-btn svg {
+  width: 18px; height: 18px; fill: none; stroke: #fff;
+  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Changelog */
+.changelog {
+  background: #fff; border-radius: 20px; padding: 40px 36px;
+  box-shadow: 0 2px 30px rgba(0,0,0,0.05);
+}
+.changelog h2 {
+  font-size: 22px; font-weight: 800; margin-bottom: 24px;
+}
+.changelog-content {
+  font-size: 14px; line-height: 2; color: var(--text-light);
+  white-space: pre-wrap;
+}
+
+/* Notice banner */
+.notice-banner {
+  background: linear-gradient(135deg, #ff8c00, #ff6b00);
+  color: #fff; padding: 14px 24px; border-radius: 12px;
+  margin-bottom: 32px; font-size: 14px; font-weight: 600;
+  text-align: center; display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .download-cards { grid-template-columns: 1fr; }
+  .main { padding: 100px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <img src="images/logo-icon.png" style="width:32px;height:32px;border-radius:8px;vertical-align:middle;margin-right:8px;">
+    <span>M</span>akeke
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link">홈</a>
+    <a href="index.html#solution" class="nav-link">기능</a>
+    <a href="guide.html" class="nav-link">설치/백업/사용법</a>
+    <a href="support.html" class="nav-link">고객지원</a>
+    <button id="loginBtn" class="login-btn" onclick="loginWithGoogle()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      로그인
+    </button>
+    <div id="userProfile" class="user-profile">
+      <img id="userPhoto" src="" alt="프로필">
+      <span id="userName"></span>
+    </div>
+    <button id="logoutBtn" class="logout-btn" onclick="logout()">로그아웃</button>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <div style="text-align:center;">
+    <h1 class="hero-title"><span class="accent">마케케</span> 다운로드</h1>
+    <p class="hero-desc">macOS와 Windows를 모두 지원합니다.</p>
+    <div class="version-badge" id="versionBadge">최신 버전: <span id="currentVersion">-</span></div>
+    <div style="margin-top:14px;">
+      <a href="guide.html" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid rgba(0,0,0,0.08);background:#fff;color:var(--text);font-size:13px;font-weight:700;text-decoration:none;">설치/백업/사용법 보기</a>
+    </div>
+  </div>
+
+  <!-- 공지 배너 -->
+  <div class="notice-banner" id="noticeBanner"></div>
+
+  <!-- 로그인 필요 화면 -->
+  <div class="login-required" id="loginRequired" style="display:none;">
+    <div style="font-size:48px;margin-bottom:16px;">🔒</div>
+    <p>다운로드하려면 로그인이 필요합니다.</p>
+    <button class="download-btn" onclick="loginWithGoogle()">
+      Google로 로그인
+    </button>
+  </div>
+
+  <!-- 다운로드 카드 -->
+  <div id="downloadSection" style="display:none;">
+    <div class="download-cards" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="download-card">
+        <div class="icon">🍎</div>
+        <h3>macOS (Apple Silicon)</h3>
+        <p class="ext">M1/M2/M3/M4 · .zip</p>
+        <button class="download-btn" id="download-btn-mac" onclick="handleDownload('macOS')">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          다운로드
+        </button>
+      </div>
+      <div class="download-card">
+        <div class="icon">🍎</div>
+        <h3>macOS (Intel)</h3>
+        <p class="ext">2020년 이전 Mac · .zip</p>
+        <button class="download-btn" id="download-btn-mac-intel" onclick="handleDownload('macOS-intel')">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          다운로드
+        </button>
+      </div>
+      <div class="download-card">
+        <div class="icon">🪟</div>
+        <h3>Windows</h3>
+        <p class="ext">Windows 10+ · .exe</p>
+        <button class="download-btn" id="download-btn-win" onclick="handleDownload('windows')">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          다운로드
+        </button>
+      </div>
+    </div>
+
+    <!-- 내 Mac 확인 -->
+    <div style="background:#fff;border-radius:20px;padding:32px 36px;box-shadow:0 2px 30px rgba(0,0,0,0.05);margin-bottom:24px;">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:16px;">내 Mac이 Apple Silicon인지 Intel인지 모르겠다면?</h2>
+      <p style="font-size:14px;line-height:1.8;color:var(--text-light);">
+        왼쪽 상단  메뉴 → <strong>이 Mac에 관하여</strong> 클릭<br>
+        <strong>칩</strong>이 표시되면 → Apple Silicon (M1/M2/M3/M4) → <strong>Apple Silicon 버전</strong> 다운로드<br>
+        <strong>프로세서</strong>에 Intel이 표시되면 → <strong>Intel 버전</strong> 다운로드
+      </p>
+    </div>
+
+    <!-- 설치 안내 -->
+    <div style="background:#fff;border-radius:20px;padding:32px 36px;box-shadow:0 2px 30px rgba(0,0,0,0.05);margin-bottom:24px;">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:16px;">설치 방법</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:14px;line-height:1.8;color:var(--text-light);">
+        <div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">macOS</h3>
+          <ol style="padding-left:20px;">
+            <li>다운로드한 <strong>.zip</strong> 파일을 더블클릭하여 압축 해제</li>
+            <li><strong>Makeke.app</strong>을 <strong>응용 프로그램</strong> 폴더로 이동</li>
+            <li>처음 실행 시 "확인되지 않은 개발자" 알림이 뜨면<br>
+              <strong>시스템 설정 → 개인정보 보호 및 보안 → "확인 없이 열기"</strong> 클릭</li>
+            <li>앱이 자동으로 Python 서버를 시작하고 Chrome에 확장 프로그램을 설치합니다</li>
+          </ol>
+        </div>
+        <div>
+          <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">Windows</h3>
+          <ol style="padding-left:20px;">
+            <li>다운로드한 <strong>.exe</strong> 파일을 실행</li>
+            <li>Windows Defender SmartScreen 경고가 뜨면<br>
+              <strong>"추가 정보" → "실행"</strong> 클릭</li>
+            <li>설치 마법사의 안내를 따라 설치 완료</li>
+            <li>앱이 자동으로 Python 서버를 시작하고 Chrome에 확장 프로그램을 설치합니다</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- 포함 사항 -->
+    <div style="background:#fff;border-radius:20px;padding:32px 36px;box-shadow:0 2px 30px rgba(0,0,0,0.05);margin-bottom:24px;">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:16px;">앱에 포함된 것</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:14px;color:var(--text-light);">
+        <div style="padding:16px;background:rgba(255,140,0,0.06);border-radius:12px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:8px;">🖥️</div>
+          <strong style="color:var(--text);">마케케 앱</strong><br>
+          Electron 데스크톱 앱
+        </div>
+        <div style="padding:16px;background:rgba(255,140,0,0.06);border-radius:12px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:8px;">⚡</div>
+          <strong style="color:var(--text);">Python 서버</strong><br>
+          AI 엔진 (별도 설치 불필요)
+        </div>
+        <div style="padding:16px;background:rgba(255,140,0,0.06);border-radius:12px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:8px;">🧩</div>
+          <strong style="color:var(--text);">Chrome 확장</strong><br>
+          자동 설치 (별도 다운로드 불필요)
+        </div>
+      </div>
+    </div>
+
+    <!-- 자동 업데이트 -->
+    <div style="background:#fff;border-radius:20px;padding:32px 36px;box-shadow:0 2px 30px rgba(0,0,0,0.05);margin-bottom:24px;">
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:16px;">자동 업데이트</h2>
+      <p style="font-size:14px;line-height:1.8;color:var(--text-light);">
+        새 버전이 나오면 앱 실행 시 자동으로 감지하고 다운로드합니다.<br>
+        <strong>"지금 재시작"</strong> 버튼을 누르면 바로 업데이트되고, <strong>"나중에"</strong>를 누르면 다음 종료 시 자동 적용됩니다.<br>
+        수동 업데이트가 필요하면 이 페이지에서 최신 버전을 다시 다운로드하세요.
+      </p>
+    </div>
+
+    <!-- 변경 이력 -->
+    <div class="changelog">
+      <h2>변경 이력</h2>
+      <div class="changelog-content" id="changelogContent">로딩 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script>
+// GitHub Releases에서 최신 버전 + 다운로드 URL 자동 로드
+const GITHUB_REPO = 'johunsang/makeke-releases';
+let downloadURLs = { ...DEFAULT_DOWNLOAD_URLS };
+let currentVersion = DEFAULT_VERSION;
+let changelogText = '';
+
+function refreshDownloadButtons() {
+  const buttons = {
+    mac: document.getElementById('download-btn-mac'),
+    macIntel: document.getElementById('download-btn-mac-intel'),
+    win: document.getElementById('download-btn-win'),
+  };
+  const urls = {
+    mac: downloadURLs.macOS,
+    macIntel: downloadURLs['macOS-intel'],
+    win: downloadURLs.windows,
+  };
+  for (const [key, btn] of Object.entries(buttons)) {
+    if (!btn) continue;
+    const url = urls[key];
+    btn.disabled = !url;
+    btn.style.opacity = url ? '1' : '0.45';
+    btn.style.cursor = url ? 'pointer' : 'not-allowed';
+    btn.textContent = url ? '다운로드' : '준비 중';
+  }
+}
+
+async function loadDownloadConfig() {
+  // 1순위: GitHub Releases에서 최신 릴리즈 가져오기
+  try {
+    const ghRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+    if (ghRes.ok) {
+      const release = await ghRes.json();
+      currentVersion = (release.tag_name || '').replace(/^v/, '') || currentVersion;
+      changelogText = release.body || '';
+      // 에셋에서 OS별 다운로드 URL 추출
+      for (const asset of (release.assets || [])) {
+        const name = (asset.name || '').toLowerCase();
+        const url = asset.browser_download_url;
+        if (name.includes('x64') && name.includes('mac') && name.endsWith('.zip')) {
+          downloadURLs['macOS-intel'] = url;
+        } else if (name.includes('arm64') && name.endsWith('.dmg')) {
+          downloadURLs.macOS = url;
+        } else if (name.includes('arm64') && name.endsWith('.zip')) {
+          downloadURLs.macOS = downloadURLs.macOS || url;
+        } else if (name.endsWith('.exe') && !name.includes('blockmap')) {
+          downloadURLs.windows = url;
+        }
+      }
+      console.log('[Download] GitHub Release:', currentVersion, downloadURLs);
+    }
+  } catch (e) {
+    console.warn('[Download] GitHub API 실패, Firestore 폴백:', e.message);
+  }
+
+  // 2순위: Firestore 설정 (GitHub 실패 시 폴백)
+  try {
+    const doc = await db.collection('config').doc('app').get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.macDownloadURL && !downloadURLs.macOS) downloadURLs.macOS = data.macDownloadURL;
+      if (data.winDownloadURL && !downloadURLs.windows) downloadURLs.windows = data.winDownloadURL;
+      if (data.latestVersion && currentVersion === DEFAULT_VERSION) currentVersion = data.latestVersion;
+      if (data.changelog && !changelogText) changelogText = data.changelog;
+    }
+  } catch (e) {
+    console.error('Firestore 설정 로드 오류:', e);
+  }
+
+  document.getElementById('currentVersion').textContent = 'v' + currentVersion;
+  refreshDownloadButtons();
+  // 변경 이력 마크다운 → 간단 렌더링
+  document.getElementById('changelogContent').textContent = changelogText || '변경 이력이 없습니다.';
+}
+
+// 공지사항 로드
+async function loadNotice() {
+  try {
+    const snapshot = await db.collection('notices')
+      .where('active', '==', true)
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      const notice = snapshot.docs[0].data();
+      const banner = document.getElementById('noticeBanner');
+      banner.textContent = notice.title + (notice.content ? ' — ' + notice.content : '');
+      banner.style.display = 'block';
+    }
+  } catch (e) {
+    console.error('공지 로드 오류:', e);
+  }
+}
+
+// 다운로드 처리
+async function handleDownload(platform) {
+  const urlMap = { macOS: downloadURLs.macOS, 'macOS-intel': downloadURLs['macOS-intel'], windows: downloadURLs.windows };
+  const url = urlMap[platform];
+  if (!url) {
+    alert('설치 파일이 아직 준비되지 않았습니다.');
+    return;
+  }
+  const user = auth.currentUser;
+  if (!user) {
+    alert('로그인이 필요합니다.');
+    loginWithGoogle();
+    return;
+  }
+
+  try {
+    // Firestore에 다운로드 기록
+    await db.collection('downloads').add({
+      userId: user.uid,
+      email: user.email,
+      platform: platform,
+      version: currentVersion,
+      downloadedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // 사용자 다운로드 카운트 증가
+    await db.collection('users').doc(user.uid).update({
+      downloadCount: firebase.firestore.FieldValue.increment(1)
+    });
+
+    // 실제 다운로드 시작
+    window.open(url, '_blank');
+
+  } catch (e) {
+    console.error('다운로드 오류:', e);
+    // 에러가 나도 다운로드는 시도
+    window.open(url, '_blank');
+  }
+}
+
+// 로그인 상태에 따라 UI 전환
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    document.getElementById('loginRequired').style.display = 'none';
+    document.getElementById('downloadSection').style.display = 'block';
+  } else {
+    document.getElementById('loginRequired').style.display = 'block';
+    document.getElementById('downloadSection').style.display = 'none';
+  }
+});
+
+// 초기화
+loadDownloadConfig();
+loadNotice();
+</script>
+
+</body>
+</html>

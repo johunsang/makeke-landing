@@ -1,0 +1,7 @@
+{
+  "version": "1.1.10",
+  "notes": "",
+  "macOS": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.10/Makeke-mac-v1.1.10.zip", "fileName": "Makeke-mac-v1.1.10.zip" },
+  "macOS-intel": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.10/Makeke-mac-intel-v1.1.10.zip", "fileName": "Makeke-mac-intel-v1.1.10.zip" },
+  "windows": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.10/Makeke-win-v1.1.10.exe", "fileName": "Makeke-win-v1.1.10.exe" }
+}

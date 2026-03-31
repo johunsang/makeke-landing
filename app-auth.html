@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마케케 로그인</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif; background: #f5f5f7; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card { background: #fff; border-radius: 24px; padding: 48px 40px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); text-align: center; max-width: 400px; width: 100%; }
+  .logo { font-size: 32px; font-weight: 900; color: #ff8c00; margin-bottom: 8px; }
+  .subtitle { font-size: 14px; color: rgba(0,0,0,0.4); margin-bottom: 32px; }
+  .btn-google { display: inline-flex; align-items: center; gap: 12px; padding: 14px 32px; background: #fff; border: 1px solid rgba(0,0,0,0.12); border-radius: 12px; font-size: 15px; font-weight: 600; color: #1c1c1e; cursor: pointer; transition: all 0.2s; }
+  .btn-google:hover { background: #f8f8f8; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .btn-google img { width: 20px; height: 20px; }
+  .status { margin-top: 24px; font-size: 13px; color: rgba(0,0,0,0.4); }
+  .status.success { color: #34c759; font-weight: 700; }
+  .status.error { color: #ff3b30; }
+  .user-info { margin-top: 20px; display: none; padding: 16px; background: rgba(255,140,0,0.06); border-radius: 12px; }
+  .user-info img { width: 48px; height: 48px; border-radius: 50%; margin-bottom: 8px; }
+  .user-info .name { font-size: 16px; font-weight: 700; color: #1c1c1e; }
+  .user-info .email { font-size: 12px; color: rgba(0,0,0,0.4); }
+  .closing-msg { margin-top: 16px; font-size: 13px; color: #ff8c00; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">마케케</div>
+  <div class="subtitle">앱에서 사용할 계정으로 로그인하세요</div>
+
+  <button class="btn-google" id="loginBtn" onclick="doLogin()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+    Google 계정으로 로그인
+  </button>
+
+  <div class="user-info" id="userInfo">
+    <img id="userPhoto" src="" alt="">
+    <div class="name" id="userName"></div>
+    <div class="email" id="userEmail"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="closing-msg" id="closingMsg">앱으로 돌아갑니다...</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
+async function doLogin() {
+  const status = document.getElementById('status');
+  const btn = document.getElementById('loginBtn');
+  status.className = 'status';
+  status.textContent = '로그인 중...';
+  btn.disabled = true;
+
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    const token = await user.getIdToken();
+
+    // Firestore에 사용자 정보 + 토큰 저장
+    await db.collection('users').doc(user.uid).set({
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || '',
+      photoURL: user.photoURL || '',
+      loginAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    await db.collection('app_tokens').doc(user.uid).set({
+      token,
+      email: user.email,
+      name: user.displayName || '',
+      photoURL: user.photoURL || '',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // UI 업데이트
+    document.getElementById('userInfo').style.display = 'block';
+    document.getElementById('userPhoto').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName || '';
+    document.getElementById('userEmail').textContent = user.email;
+    btn.style.display = 'none';
+
+    status.className = 'status success';
+    status.textContent = '로그인 성공!';
+
+    // 앱으로 토큰 전달 (URL 파라미터로 로컬 서버에 전송)
+    const callbackPort = new URLSearchParams(window.location.search).get('port') || '8800';
+    try {
+      await fetch(`http://127.0.0.1:${callbackPort}/api/auth/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || '',
+          photoURL: user.photoURL || '',
+        }),
+      });
+      document.getElementById('closingMsg').style.display = 'block';
+      setTimeout(() => window.close(), 2000);
+    } catch(e) {
+      status.textContent = '로그인 성공! 앱에서 확인하세요.';
+    }
+  } catch(error) {
+    if (error.code !== 'auth/popup-closed-by-user') {
+      status.className = 'status error';
+      status.textContent = '로그인 실패: ' + error.message;
+    }
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
