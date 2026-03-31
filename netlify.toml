@@ -1,25 +1,10 @@
-plugins = []
-headers = []
-redirects = []
-
-[functions]
-
-  [functions."*"]
-
 [build]
-publish = "/Volumes/SAMSUNG/apps/projects/naver-blog-auto"
-publishOrigin = "default"
+publish = "."
 
-  [build.environment]
-
-  [build.processing]
-
-    [build.processing.css]
-
-    [build.processing.html]
-
-    [build.processing.images]
-
-    [build.processing.js]
-
-  [build.services]
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
