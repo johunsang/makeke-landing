@@ -1,7 +1,7 @@
 {
-  "version": "1.1.13",
-  "notes": "gemini-2.0-flash 폐지 대응 긴급 수정",
-  "macOS": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.13/Makeke-mac-v1.1.13.zip", "fileName": "Makeke-mac-v1.1.13.zip" },
-  "macOS-intel": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.13/Makeke-mac-intel-v1.1.13.zip", "fileName": "Makeke-mac-intel-v1.1.13.zip" },
-  "windows": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.13/Makeke-win-v1.1.13.exe", "fileName": "Makeke-win-v1.1.13.exe" }
+  "version": "1.1.23",
+  "notes": "",
+  "macOS": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.23/Makeke-mac-v1.1.23.zip", "fileName": "Makeke-mac-v1.1.23.zip" },
+  "macOS-intel": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.23/Makeke-mac-intel-v1.1.23.zip", "fileName": "Makeke-mac-intel-v1.1.23.zip" },
+  "windows": { "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.23/Makeke-win-v1.1.23.exe", "fileName": "Makeke-win-v1.1.23.exe" }
 }
