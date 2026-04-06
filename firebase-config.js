@@ -25,7 +25,7 @@ const DEFAULT_DOWNLOAD_URLS = {
 };
 
 // 현재 버전 기본값 (Firestore config 컬렉션에 저장된 값이 우선)
-const DEFAULT_VERSION = "1.1.31";
+const DEFAULT_VERSION = "1.1.32";
 
 // ============================================================
 // Firebase 초기화
