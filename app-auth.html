@@ -50,110 +50,139 @@
 <script>
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
+let _loginInFlight = false;
+
+function setStatus(message, type = '') {
+  const status = document.getElementById('status');
+  status.className = type ? `status ${type}` : 'status';
+  status.textContent = message || '';
+}
+
+function setLoginButtonBusy(isBusy) {
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = !!isBusy;
+  btn.textContent = isBusy ? 'Google 로그인 페이지 여는 중...' : 'Google 계정으로 로그인';
+}
+
+async function handleLoginSuccess(user) {
+  const token = await user.getIdToken();
+  const profileData = {
+    emailVerified: !!user.emailVerified,
+    phoneNumber: user.phoneNumber || '',
+    providerIds: (user.providerData || []).map((item) => item?.providerId || '').filter(Boolean),
+    providers: (user.providerData || []).map((item) => ({
+      providerId: item?.providerId || '',
+      uid: item?.uid || '',
+      email: item?.email || '',
+      displayName: item?.displayName || '',
+      photoURL: item?.photoURL || '',
+    })),
+    metadata: {
+      creationTime: user.metadata?.creationTime || '',
+      lastSignInTime: user.metadata?.lastSignInTime || '',
+    },
+  };
+
+  await db.collection('users').doc(user.uid).set({
+    uid: user.uid,
+    email: user.email,
+    name: user.displayName || '',
+    photoURL: user.photoURL || '',
+    loginAt: firebase.firestore.FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+  await db.collection('app_tokens').doc(user.uid).set({
+    token,
+    email: user.email,
+    name: user.displayName || '',
+    photoURL: user.photoURL || '',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+
+  document.getElementById('userInfo').style.display = 'block';
+  document.getElementById('userPhoto').src = user.photoURL || '';
+  document.getElementById('userName').textContent = user.displayName || '';
+  document.getElementById('userEmail').textContent = user.email;
+  document.getElementById('loginBtn').style.display = 'none';
+  setStatus('로그인 성공!', 'success');
+
+  const callbackPort = new URLSearchParams(window.location.search).get('port') || '8800';
+  const callbackTargets = [
+    `http://127.0.0.1:${callbackPort}/api/auth/callback`,
+    `http://localhost:${callbackPort}/api/auth/callback`,
+  ];
+  let callbackOk = false;
+  let lastError = null;
+  for (const callbackUrl of callbackTargets) {
+    try {
+      const callbackRes = await fetch(callbackUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || '',
+          photoURL: user.photoURL || '',
+          profileData,
+        }),
+      });
+      if (!callbackRes.ok) {
+        const err = await callbackRes.json().catch(() => ({}));
+        throw new Error(err?.detail || err?.error || '앱 로그인 저장 실패');
+      }
+      callbackOk = true;
+      break;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
+  document.getElementById('closingMsg').style.display = 'block';
+  setTimeout(() => window.close(), 2000);
+}
+
+async function finishRedirectLoginIfNeeded() {
+  try {
+    const result = await auth.getRedirectResult();
+    if (result?.user) {
+      setLoginButtonBusy(true);
+      setStatus('로그인 결과를 확인하는 중...');
+      await handleLoginSuccess(result.user);
+    }
+  } catch (error) {
+    setStatus('로그인 실패: ' + (error.message || error), 'error');
+    setLoginButtonBusy(false);
+  }
+}
 
 async function doLogin() {
-  const status = document.getElementById('status');
-  const btn = document.getElementById('loginBtn');
-  status.className = 'status';
-  status.textContent = '로그인 중...';
-  btn.disabled = true;
+  if (_loginInFlight) return;
+  _loginInFlight = true;
+  setStatus('로그인 중...');
+  setLoginButtonBusy(true);
 
   try {
     const result = await auth.signInWithPopup(provider);
-    const user = result.user;
-    const token = await user.getIdToken();
-    const profileData = {
-      emailVerified: !!user.emailVerified,
-      phoneNumber: user.phoneNumber || '',
-      providerIds: (user.providerData || []).map((item) => item?.providerId || '').filter(Boolean),
-      providers: (user.providerData || []).map((item) => ({
-        providerId: item?.providerId || '',
-        uid: item?.uid || '',
-        email: item?.email || '',
-        displayName: item?.displayName || '',
-        photoURL: item?.photoURL || '',
-      })),
-      metadata: {
-        creationTime: user.metadata?.creationTime || '',
-        lastSignInTime: user.metadata?.lastSignInTime || '',
-      },
-    };
-
-    // Firestore에 사용자 정보 + 토큰 저장
-    await db.collection('users').doc(user.uid).set({
-      uid: user.uid,
-      email: user.email,
-      name: user.displayName || '',
-      photoURL: user.photoURL || '',
-      loginAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
-
-    await db.collection('app_tokens').doc(user.uid).set({
-      token,
-      email: user.email,
-      name: user.displayName || '',
-      photoURL: user.photoURL || '',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // UI 업데이트
-    document.getElementById('userInfo').style.display = 'block';
-    document.getElementById('userPhoto').src = user.photoURL || '';
-    document.getElementById('userName').textContent = user.displayName || '';
-    document.getElementById('userEmail').textContent = user.email;
-    btn.style.display = 'none';
-
-    status.className = 'status success';
-    status.textContent = '로그인 성공!';
-
-    const callbackPort = new URLSearchParams(window.location.search).get('port') || '8800';
-    const callbackTargets = [
-      `http://127.0.0.1:${callbackPort}/api/auth/callback`,
-      `http://localhost:${callbackPort}/api/auth/callback`,
-    ];
-    try {
-      let callbackOk = false;
-      let lastError = null;
-      for (const callbackUrl of callbackTargets) {
-        try {
-          const callbackRes = await fetch(callbackUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              token,
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || '',
-              photoURL: user.photoURL || '',
-              profileData,
-            }),
-          });
-          if (!callbackRes.ok) {
-            const err = await callbackRes.json().catch(() => ({}));
-            throw new Error(err?.detail || err?.error || '앱 로그인 저장 실패');
-          }
-          callbackOk = true;
-          break;
-        } catch (err) {
-          lastError = err;
-        }
-      }
-      if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
-      document.getElementById('closingMsg').style.display = 'block';
-      setTimeout(() => window.close(), 2000);
-    } catch(e) {
-      status.className = 'status error';
-      status.textContent = '로그인 성공, 앱 전달 실패: ' + (e.message || e);
-      btn.disabled = false;
+    if (!result?.user) {
+      throw new Error('로그인 결과를 확인할 수 없습니다.');
     }
+    await handleLoginSuccess(result.user);
   } catch(error) {
-    if (error.code !== 'auth/popup-closed-by-user') {
-      status.className = 'status error';
-      status.textContent = '로그인 실패: ' + error.message;
+    if (error.code === 'auth/popup-blocked') {
+      setStatus('브라우저 팝업이 차단되어 전체 페이지 로그인으로 전환합니다...');
+      await auth.signInWithRedirect(provider);
+      return;
     }
-    btn.disabled = false;
+    if (error.code !== 'auth/popup-closed-by-user') {
+      setStatus('로그인 실패: ' + (error.message || error), 'error');
+    }
+    setLoginButtonBusy(false);
+    _loginInFlight = false;
   }
 }
+
+finishRedirectLoginIfNeeded();
 </script>
 </body>
 </html>
