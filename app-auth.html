@@ -50,7 +50,59 @@
 <script>
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
+provider.addScope('https://www.googleapis.com/auth/datastore');
 let _loginInFlight = false;
+
+function ensureLocalHttp() {
+  const host = String(window.location.hostname || '').toLowerCase();
+  const isLocalHost = host === '127.0.0.1' || host === 'localhost';
+  if (isLocalHost && window.location.protocol === 'https:') {
+    const nextUrl = `http://${host}${window.location.port ? `:${window.location.port}` : ''}${window.location.pathname}${window.location.search}${window.location.hash}`;
+    window.location.replace(nextUrl);
+    return true;
+  }
+  return false;
+}
+
+function getRequestedPort() {
+  return new URLSearchParams(window.location.search).get('port') || window.location.port || '8800';
+}
+
+function getCallbackTargets() {
+  const callbackPort = getRequestedPort();
+  return [
+    `http://127.0.0.1:${callbackPort}/api/auth/callback`,
+    `http://localhost:${callbackPort}/api/auth/callback`,
+  ];
+}
+
+function getAppHandoffTargets() {
+  const callbackPort = getRequestedPort();
+  return [
+    `http://127.0.0.1:${callbackPort}/?auth_handoff=1`,
+    `http://localhost:${callbackPort}/?auth_handoff=1`,
+  ];
+}
+
+function getAppReturnTargets() {
+  const callbackPort = getRequestedPort();
+  return [
+    `http://127.0.0.1:${callbackPort}/?auth_return=1`,
+    `http://localhost:${callbackPort}/?auth_return=1`,
+  ];
+}
+
+function encodeLoginHandoff(payload) {
+  return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
+}
+
+function decodeLoginHandoff(raw) {
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(raw)))));
+  } catch {
+    return null;
+  }
+}
 
 function setStatus(message, type = '') {
   const status = document.getElementById('status');
@@ -64,9 +116,36 @@ function setLoginButtonBusy(isBusy) {
   btn.textContent = isBusy ? 'Google 로그인 페이지 여는 중...' : 'Google 계정으로 로그인';
 }
 
-async function handleLoginSuccess(user) {
+function getGoogleAccessToken(result) {
+  try {
+    const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+    return credential?.accessToken || '';
+  } catch {
+    return '';
+  }
+}
+
+function returnToApp() {
+  for (const target of getAppReturnTargets()) {
+    try {
+      window.location.replace(target);
+      return true;
+    } catch {}
+  }
+  return false;
+}
+
+async function handleLoginSuccess(user, googleAccessToken = '') {
   const token = await user.getIdToken();
-  const profileData = {
+  const callbackPayload = {
+    token,
+    googleAccessToken,
+    refreshToken: user.refreshToken || '',
+    uid: user.uid,
+    email: user.email,
+    name: user.displayName || '',
+    photoURL: user.photoURL || '',
+    profileData: {
     emailVerified: !!user.emailVerified,
     phoneNumber: user.phoneNumber || '',
     providerIds: (user.providerData || []).map((item) => item?.providerId || '').filter(Boolean),
@@ -81,6 +160,7 @@ async function handleLoginSuccess(user) {
       creationTime: user.metadata?.creationTime || '',
       lastSignInTime: user.metadata?.lastSignInTime || '',
     },
+    },
   };
 
   await db.collection('users').doc(user.uid).set({
@@ -93,11 +173,12 @@ async function handleLoginSuccess(user) {
 
   await db.collection('app_tokens').doc(user.uid).set({
     token,
+    googleAccessToken,
     email: user.email,
     name: user.displayName || '',
     photoURL: user.photoURL || '',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  });
+  }, { merge: true });
 
   document.getElementById('userInfo').style.display = 'block';
   document.getElementById('userPhoto').src = user.photoURL || '';
@@ -106,26 +187,14 @@ async function handleLoginSuccess(user) {
   document.getElementById('loginBtn').style.display = 'none';
   setStatus('로그인 성공!', 'success');
 
-  const callbackPort = new URLSearchParams(window.location.search).get('port') || '8800';
-  const callbackTargets = [
-    `http://127.0.0.1:${callbackPort}/api/auth/callback`,
-    `http://localhost:${callbackPort}/api/auth/callback`,
-  ];
   let callbackOk = false;
   let lastError = null;
-  for (const callbackUrl of callbackTargets) {
+  for (const callbackUrl of getCallbackTargets()) {
     try {
       const callbackRes = await fetch(callbackUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token,
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName || '',
-          photoURL: user.photoURL || '',
-          profileData,
-        }),
+        body: JSON.stringify(callbackPayload),
       });
       if (!callbackRes.ok) {
         const err = await callbackRes.json().catch(() => ({}));
@@ -137,9 +206,74 @@ async function handleLoginSuccess(user) {
       lastError = err;
     }
   }
-  if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
+  if (!callbackOk) {
+    const handoff = encodeLoginHandoff(callbackPayload);
+    for (const target of getAppHandoffTargets()) {
+      try {
+        window.location.replace(`${target}#handoff=${handoff}`);
+        return;
+      } catch {}
+    }
+    throw lastError || new Error('앱 로그인 저장 실패');
+  }
   document.getElementById('closingMsg').style.display = 'block';
-  setTimeout(() => window.close(), 2000);
+  setTimeout(() => {
+    if (!returnToApp()) {
+      window.close();
+    }
+  }, 1200);
+}
+
+async function consumeLoginHandoffIfNeeded() {
+  const hash = String(window.location.hash || '');
+  const match = hash.match(/handoff=([^&]+)/);
+  if (!match) return false;
+  const payload = decodeLoginHandoff(match[1]);
+  if (!payload?.token || !payload?.email) {
+    setStatus('로그인 연결 정보를 읽지 못했습니다. 다시 시도해주세요.', 'error');
+    return true;
+  }
+  setLoginButtonBusy(true);
+  setStatus('앱 로그인 연결을 마무리하는 중...');
+  try {
+    let callbackOk = false;
+    let lastError = null;
+    for (const callbackUrl of getCallbackTargets()) {
+      try {
+        const callbackRes = await fetch(callbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!callbackRes.ok) {
+          const err = await callbackRes.json().catch(() => ({}));
+          throw new Error(err?.detail || err?.error || '앱 로그인 저장 실패');
+        }
+        callbackOk = true;
+        break;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'block';
+    document.getElementById('userPhoto').src = payload.photoURL || '';
+    document.getElementById('userName').textContent = payload.name || payload.email || '';
+    document.getElementById('userEmail').textContent = payload.email || '';
+    setStatus('로그인 성공!', 'success');
+    document.getElementById('closingMsg').style.display = 'block';
+    setTimeout(() => {
+      if (!returnToApp()) {
+        window.close();
+      }
+    }, 1200);
+  } catch (error) {
+    setStatus('로그인 연결 실패: ' + (error.message || error), 'error');
+    setLoginButtonBusy(false);
+  }
+  return true;
 }
 
 async function finishRedirectLoginIfNeeded() {
@@ -148,7 +282,7 @@ async function finishRedirectLoginIfNeeded() {
     if (result?.user) {
       setLoginButtonBusy(true);
       setStatus('로그인 결과를 확인하는 중...');
-      await handleLoginSuccess(result.user);
+      await handleLoginSuccess(result.user, getGoogleAccessToken(result));
     }
   } catch (error) {
     setStatus('로그인 실패: ' + (error.message || error), 'error');
@@ -167,7 +301,7 @@ async function doLogin() {
     if (!result?.user) {
       throw new Error('로그인 결과를 확인할 수 없습니다.');
     }
-    await handleLoginSuccess(result.user);
+    await handleLoginSuccess(result.user, getGoogleAccessToken(result));
   } catch(error) {
     if (error.code === 'auth/popup-blocked') {
       setStatus('브라우저 팝업이 차단되어 전체 페이지 로그인으로 전환합니다...');
@@ -182,7 +316,13 @@ async function doLogin() {
   }
 }
 
-finishRedirectLoginIfNeeded();
+(async () => {
+  if (ensureLocalHttp()) return;
+  const handled = await consumeLoginHandoffIfNeeded();
+  if (!handled) {
+    await finishRedirectLoginIfNeeded();
+  }
+})();
 </script>
 </body>
 </html>

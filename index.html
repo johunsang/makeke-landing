@@ -314,6 +314,44 @@ body {
   border-radius: 100px; font-size: 12px; font-weight: 700; color: var(--accent);
 }
 
+/* ===== ALL FEATURES MAP ===== */
+.allf-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-top: 48px;
+}
+.allf-group {
+  background: var(--white); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 28px 24px; transition: transform 0.3s, box-shadow 0.3s;
+}
+.allf-group:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.06); }
+.allf-group-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.3px;
+}
+.allf-group-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.allf-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.allf-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; line-height: 1.5; color: var(--text-light);
+}
+.allf-name {
+  font-weight: 700; color: var(--text); white-space: nowrap; min-width: 100px; flex-shrink: 0;
+}
+.allf-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; border-radius: 100px; padding: 0 7px;
+  background: rgba(var(--accent-rgb),0.08); color: var(--accent);
+  font-size: 11px; font-weight: 800; margin-left: auto; flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .allf-grid { grid-template-columns: 1fr; }
+  .allf-name { min-width: 80px; }
+}
+
 /* ===== PAIN SECTION ===== */
 .pain-section {
   background: var(--yellow-bg); position: relative;
@@ -600,6 +638,7 @@ body {
   <ul class="nav-links" id="navLinks">
     <li><a href="#hero">홈</a></li>
     <li><a href="#features">기능</a></li>
+    <li><a href="#all-features">전체 기능</a></li>
     <li><a href="#demo">데모</a></li>
     <li><a href="#pricing">가격</a></li>
     <li><a href="#faq">FAQ</a></li>
@@ -738,6 +777,18 @@ body {
         <span class="price-tag">문체 유지 + 분할 복사</span>
       </div>
       <div class="feature-card fade-in fade-in-d2">
+        <div class="feature-card-icon" style="background:rgba(0,122,255,0.1);font-size:24px;">&#128218;</div>
+        <h3>전문 라이브러리</h3>
+        <p>키워드 하나로 네이버 웹·뉴스·블로그·이미지를 전방위 수집하고, Gemini가 전문 리서치 문서로 자동 정리합니다. 콘텐츠 생성 시 참조 자료로 바로 활용됩니다.</p>
+        <span class="price-tag">자동 수집 · Gemini 요약</span>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-card-icon" style="background:rgba(var(--accent-rgb),0.1);font-size:24px;">&#128197;</div>
+        <h3>30일 SNS 플래너</h3>
+        <p>기승전결 4주 전략 아크와 하루 3포스트 구조로 30일 운영 계획을 자동 생성합니다. 프로필 문체를 반영한 Threads·X 초안까지 Gemini로 바로 받을 수 있습니다.</p>
+        <span class="price-tag">기승전결 · 하루 3포스트</span>
+      </div>
+      <div class="feature-card fade-in fade-in-d1">
         <div class="feature-card-icon" style="background:rgba(var(--accent-rgb),0.1);font-size:24px;">⚙</div>
         <h3>브라우저 자동화와 발행</h3>
         <p>네이버 블로그, 스레드, X 발행과 저장형 시나리오, AI 명령형 브라우저 자동화를 Chrome 프로필 기준으로 연결합니다.</p>
@@ -748,8 +799,150 @@ body {
 </section>
 
 
+<!-- ===== ALL FEATURES MAP ===== -->
+<section class="section" id="all-features" style="background:var(--white);">
+  <div class="section-inner section-center">
+    <div class="section-label fade-in">전체 기능</div>
+    <h2 class="section-title fade-in fade-in-d1">마케케 하나로<br><span style="color:var(--accent)">39개 도구</span>를 쓸 수 있습니다.</h2>
+    <p class="section-desc fade-in fade-in-d2">콘텐츠 생성, 브랜딩, 이커머스, AI 모델, 크리에이티브, 자동화, 관리까지 한 앱에 모두 들어있습니다.</p>
+  </div>
+  <div class="section-inner">
+    <div class="allf-grid">
+
+      <!-- 에이전트 + 프로젝트 -->
+      <div class="allf-group fade-in">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(var(--accent-rgb),0.1);color:var(--accent);">&#9733;</div>
+          에이전트 &amp; 프로젝트
+          <span class="allf-count">3</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">종합 에이전트</span>자연어 명령으로 트렌드 분석부터 발행까지 전자동 실행</li>
+          <li class="allf-item"><span class="allf-name">워크스페이스</span>키워드별 파이프라인 — 수집, 생성, 발행까지 한 화면</li>
+          <li class="allf-item"><span class="allf-name">히스토리</span>블로그·카드뉴스·영상 등 생성물 이력 조회·편집·발행</li>
+        </ul>
+      </div>
+
+      <!-- 단일 콘텐츠 -->
+      <div class="allf-group fade-in fade-in-d1">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(52,199,89,0.1);color:#34c759;">&#9998;</div>
+          단일 콘텐츠 생성
+          <span class="allf-count">6</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">네이버 블로그</span>URL 스크래핑 + 라이브러리 참조 → AI 블로그 글 생성</li>
+          <li class="allf-item"><span class="allf-name">카드뉴스</span>URL·주제 입력 → 113개 스타일 이미지 세트 생성</li>
+          <li class="allf-item"><span class="allf-name">4컷 만화</span>AI 스토리 추천 → 23개 스타일 만화 자동 생성</li>
+          <li class="allf-item"><span class="allf-name">광고 영상</span>씬별 스크립트 + TTS + 자막 + BGM → MP4 영상</li>
+          <li class="allf-item"><span class="allf-name">스레드/X</span>URL 스크래핑 → 플랫폼별 SNS 게시글 자동 분할</li>
+          <li class="allf-item"><span class="allf-name">30일 SNS 플래너</span>기승전결 4주 전략 × 하루 3포스트 콘텐츠 캘린더</li>
+        </ul>
+      </div>
+
+      <!-- 브랜딩 스킬 -->
+      <div class="allf-group fade-in fade-in-d2">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(0,122,255,0.1);color:#007aff;">&#9830;</div>
+          브랜딩 스킬
+          <span class="allf-count">9</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">브랜딩 허브</span>62개+ 마케팅 스킬 카테고리 종합 관리</li>
+          <li class="allf-item"><span class="allf-name">SEO 진단</span>10가지 모드로 웹사이트 SEO 분석·점수 산출</li>
+          <li class="allf-item"><span class="allf-name">온라인샵 브랜딩</span>5단계 위저드 — 이름 30개·슬로건·로고·브랜딩 자산</li>
+          <li class="allf-item"><span class="allf-name">오프라인샵 브랜딩</span>매장 간판·운영에 최적화된 브랜딩 위저드</li>
+          <li class="allf-item"><span class="allf-name">로고 생성</span>10종 타입 × 18종 스타일 × 12종 컬러 AI 생성</li>
+          <li class="allf-item"><span class="allf-name">백링크 검사기</span>사이트 백링크 현황 조회·품질 분석</li>
+          <li class="allf-item"><span class="allf-name">브로큰 링크체커</span>최대 100페이지 크롤링, 깨진 링크 탐지</li>
+          <li class="allf-item"><span class="allf-name">광고 배너</span>12종 무드 × 12종 배경 AI 배너 이미지 생성</li>
+          <li class="allf-item"><span class="allf-name">광고 영상</span>8종 광고 컨셉(Apple·Nike 등) 기반 영상 생성</li>
+        </ul>
+      </div>
+
+      <!-- 이커머스 상품 도구 -->
+      <div class="allf-group fade-in">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(255,149,0,0.1);color:#ff9500;">&#128722;</div>
+          이커머스 상품 도구
+          <span class="allf-count">6</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">히스토리</span>이커머스 생성물(배너·상세페이지·영상) 이력 관리</li>
+          <li class="allf-item"><span class="allf-name">배너 생성</span>상품 프로모션·이벤트 배너 이미지 생성</li>
+          <li class="allf-item"><span class="allf-name">상세페이지 생성</span>URL 자동 추출 또는 수동 입력 → 레이아웃 자동 디자인</li>
+          <li class="allf-item"><span class="allf-name">상세페이지 진단</span>7개 항목 채점(A~D) + 개선 포인트 제안</li>
+          <li class="allf-item"><span class="allf-name">광고 영상</span>상품 홍보용 숏폼 광고 영상 생성</li>
+          <li class="allf-item"><span class="allf-name">유튜브 썸네일</span>16종 카테고리 × 8종 무드 최적화 썸네일 생성</li>
+        </ul>
+      </div>
+
+      <!-- 모델/패션 -->
+      <div class="allf-group fade-in fade-in-d1">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(175,82,222,0.1);color:#af52de;">&#128100;</div>
+          AI 모델 &amp; 패션
+          <span class="allf-count">3</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">AI 모델</span>성별·나이·스타일·인종·체형 지정 → 가상 모델 생성</li>
+          <li class="allf-item"><span class="allf-name">가상 피팅</span>의류 이미지를 AI 모델에 착용 시뮬레이션</li>
+          <li class="allf-item"><span class="allf-name">인플루언서</span>인플루언서 × 상품 조합 홍보 이미지 생성</li>
+        </ul>
+      </div>
+
+      <!-- 크리에이티브 -->
+      <div class="allf-group fade-in fade-in-d2">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(255,45,85,0.1);color:#ff2d55;">&#127912;</div>
+          크리에이티브
+          <span class="allf-count">5</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">아트 변환</span>70종+ 화가·기법 스타일로 이미지 변환·생성</li>
+          <li class="allf-item"><span class="allf-name">만화 생성</span>캐릭터·줄거리 입력 → 27종 스타일 만화 페이지</li>
+          <li class="allf-item"><span class="allf-name">인테리어</span>가구 이미지를 8종 인테리어 공간에 배치 시뮬레이션</li>
+          <li class="allf-item"><span class="allf-name">펫 모델</span>품종·포즈·배경 지정 → AI 반려동물 스튜디오 촬영</li>
+          <li class="allf-item"><span class="allf-name">펫 의상</span>반려동물에 의상 가상 착용 합성</li>
+        </ul>
+      </div>
+
+      <!-- 자동화 -->
+      <div class="allf-group fade-in">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(90,200,250,0.1);color:#5ac8fa;">&#9881;</div>
+          자동화
+          <span class="allf-count">2</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">브라우저 자동화</span>AI 명령 또는 시나리오로 Chrome 제어·발행·스케줄</li>
+          <li class="allf-item"><span class="allf-name">좌표 자동화</span>데스크톱 스크린샷 → Gemini Vision 분석 → 클릭·입력</li>
+        </ul>
+      </div>
+
+      <!-- 관리 -->
+      <div class="allf-group fade-in fade-in-d1">
+        <div class="allf-group-title">
+          <div class="allf-group-icon" style="background:rgba(0,0,0,0.06);color:var(--text-light);">&#9776;</div>
+          관리
+          <span class="allf-count">5</span>
+        </div>
+        <ul class="allf-list">
+          <li class="allf-item"><span class="allf-name">전문 라이브러리</span>키워드 → 네이버 전방위 수집 → Gemini 리서치 문서 자동 생성</li>
+          <li class="allf-item"><span class="allf-name">프로필 관리</span>브랜드별 문체 학습·계정 연결·스타일 분석</li>
+          <li class="allf-item"><span class="allf-name">설정</span>API 키, 네이버 계정, Chrome Extension 설정</li>
+          <li class="allf-item"><span class="allf-name">프롬프트 관리</span>생성 모듈별 프롬프트 편집·세트 관리·AI 자동 생성</li>
+          <li class="allf-item"><span class="allf-name">공지사항</span>앱 업데이트 및 공지 안내</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
 <!-- ===== WORKFLOW ===== -->
-<section class="section" id="workflow" style="background:var(--white);">
+<section class="section" id="workflow" style="background:var(--bg);">
   <div class="section-inner section-center">
     <div class="section-label fade-in">워크플로우</div>
     <h2 class="section-title fade-in fade-in-d1">수집, 생성, 보정, 발행까지.<br><span style="color:var(--accent)">한 흐름</span>으로 자동.</h2>
@@ -793,7 +986,7 @@ body {
 
 
 <!-- ===== PLATFORMS ===== -->
-<section class="section" id="platforms" style="background:var(--bg);">
+<section class="section" id="platforms" style="background:var(--white);">
   <div class="section-inner section-center">
     <div class="section-label fade-in">지원 플랫폼</div>
     <h2 class="section-title fade-in fade-in-d1">한 번에 <span style="color:var(--accent)">6개</span> 플랫폼.</h2>
