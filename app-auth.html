@@ -76,32 +76,12 @@ function getCallbackTargets() {
   ];
 }
 
-function getAppHandoffTargets() {
+function getReturnTargets() {
   const callbackPort = getRequestedPort();
   return [
-    `http://127.0.0.1:${callbackPort}/?auth_handoff=1`,
-    `http://localhost:${callbackPort}/?auth_handoff=1`,
+    `http://127.0.0.1:${callbackPort}/app-auth-return?port=${callbackPort}`,
+    `http://localhost:${callbackPort}/app-auth-return?port=${callbackPort}`,
   ];
-}
-
-function getAppReturnTargets() {
-  const callbackPort = getRequestedPort();
-  return [
-    `http://127.0.0.1:${callbackPort}/?auth_return=1`,
-    `http://localhost:${callbackPort}/?auth_return=1`,
-  ];
-}
-
-function encodeLoginHandoff(payload) {
-  return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
-}
-
-function decodeLoginHandoff(raw) {
-  try {
-    return JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(raw)))));
-  } catch {
-    return null;
-  }
 }
 
 function setStatus(message, type = '') {
@@ -123,16 +103,6 @@ function getGoogleAccessToken(result) {
   } catch {
     return '';
   }
-}
-
-function returnToApp() {
-  for (const target of getAppReturnTargets()) {
-    try {
-      window.location.replace(target);
-      return true;
-    } catch {}
-  }
-  return false;
 }
 
 async function handleLoginSuccess(user, googleAccessToken = '') {
@@ -206,74 +176,15 @@ async function handleLoginSuccess(user, googleAccessToken = '') {
       lastError = err;
     }
   }
-  if (!callbackOk) {
-    const handoff = encodeLoginHandoff(callbackPayload);
-    for (const target of getAppHandoffTargets()) {
-      try {
-        window.location.replace(`${target}#handoff=${handoff}`);
-        return;
-      } catch {}
-    }
-    throw lastError || new Error('앱 로그인 저장 실패');
-  }
+  if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
   document.getElementById('closingMsg').style.display = 'block';
-  setTimeout(() => {
-    if (!returnToApp()) {
-      window.close();
-    }
-  }, 1200);
-}
-
-async function consumeLoginHandoffIfNeeded() {
-  const hash = String(window.location.hash || '');
-  const match = hash.match(/handoff=([^&]+)/);
-  if (!match) return false;
-  const payload = decodeLoginHandoff(match[1]);
-  if (!payload?.token || !payload?.email) {
-    setStatus('로그인 연결 정보를 읽지 못했습니다. 다시 시도해주세요.', 'error');
-    return true;
+  setStatus('로그인 성공! 서버 완료 화면으로 이동합니다.', 'success');
+  for (const target of getReturnTargets()) {
+    try {
+      window.location.replace(target);
+      return;
+    } catch {}
   }
-  setLoginButtonBusy(true);
-  setStatus('앱 로그인 연결을 마무리하는 중...');
-  try {
-    let callbackOk = false;
-    let lastError = null;
-    for (const callbackUrl of getCallbackTargets()) {
-      try {
-        const callbackRes = await fetch(callbackUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        if (!callbackRes.ok) {
-          const err = await callbackRes.json().catch(() => ({}));
-          throw new Error(err?.detail || err?.error || '앱 로그인 저장 실패');
-        }
-        callbackOk = true;
-        break;
-      } catch (err) {
-        lastError = err;
-      }
-    }
-    if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
-    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-    document.getElementById('loginBtn').style.display = 'none';
-    document.getElementById('userInfo').style.display = 'block';
-    document.getElementById('userPhoto').src = payload.photoURL || '';
-    document.getElementById('userName').textContent = payload.name || payload.email || '';
-    document.getElementById('userEmail').textContent = payload.email || '';
-    setStatus('로그인 성공!', 'success');
-    document.getElementById('closingMsg').style.display = 'block';
-    setTimeout(() => {
-      if (!returnToApp()) {
-        window.close();
-      }
-    }, 1200);
-  } catch (error) {
-    setStatus('로그인 연결 실패: ' + (error.message || error), 'error');
-    setLoginButtonBusy(false);
-  }
-  return true;
 }
 
 async function finishRedirectLoginIfNeeded() {
@@ -318,10 +229,7 @@ async function doLogin() {
 
 (async () => {
   if (ensureLocalHttp()) return;
-  const handled = await consumeLoginHandoffIfNeeded();
-  if (!handled) {
-    await finishRedirectLoginIfNeeded();
-  }
+  await finishRedirectLoginIfNeeded();
 })();
 </script>
 </body>

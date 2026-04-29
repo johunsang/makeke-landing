@@ -3,6 +3,7 @@
 // ============================================================
 
 const authProvider = new firebase.auth.GoogleAuthProvider();
+authProvider.addScope('https://www.googleapis.com/auth/datastore');
 // 항상 계정 선택 화면 표시 (기본 프로필 자동 선택 방지)
 authProvider.setCustomParameters({ prompt: 'select_account' });
 
