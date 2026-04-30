@@ -1,16 +1,16 @@
 {
-  "version": "1.1.74",
+  "version": "1.1.75",
   "notes": "",
   "macOS": {
-    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.74/Makeke-mac-v1.1.74.zip",
-    "fileName": "Makeke-mac-v1.1.74.zip"
+    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.75/Makeke-mac-v1.1.75.zip",
+    "fileName": "Makeke-mac-v1.1.75.zip"
   },
   "macOS-intel": {
-    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.74/Makeke-mac-intel-v1.1.74.zip",
-    "fileName": "Makeke-mac-intel-v1.1.74.zip"
+    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.1.75/Makeke-mac-intel-v1.1.75.zip",
+    "fileName": "Makeke-mac-intel-v1.1.75.zip"
   },
   "windows": {
-    "url": "https://github.com/johunsang/makeke-releases-win/releases/download/v1.1.74/Makeke-win-v1.1.74.exe",
-    "fileName": "Makeke-win-v1.1.74.exe"
+    "url": "https://github.com/johunsang/makeke-releases-win/releases/download/v1.1.75/Makeke-win-v1.1.75.exe",
+    "fileName": "Makeke-win-v1.1.75.exe"
   }
 }
