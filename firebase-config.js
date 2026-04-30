@@ -26,7 +26,7 @@ const DEFAULT_DOWNLOAD_URLS = {
   windows: `${RELEASES_BASE_WIN}/v1.1.79/Makeke-win-v1.1.79.exe`
 =======
   windows: `${RELEASES_BASE}/v1.1.79/Makeke-win-v1.1.79.exe`
->>>>>>> 286c409f (landing: auto-update downloads to v1.1.79)
+>>>>>>> a45b357f (landing: auto-update downloads to v1.1.79)
 };
 
 // 현재 버전 기본값 (Firestore config 컬렉션에 저장된 값이 우선)
