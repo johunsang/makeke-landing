@@ -453,46 +453,31 @@ async function handleDownload(platform) {
     return;
   }
   const user = auth.currentUser;
-  if (!user) {
-    alert('로그인이 필요합니다.');
-    loginWithGoogle();
-    return;
-  }
 
   try {
-    // Firestore에 다운로드 기록
-    await db.collection('downloads').add({
-      userId: user.uid,
-      email: user.email,
-      platform: platform,
-      version: currentVersion,
-      downloadedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // 사용자 다운로드 카운트 증가
-    await db.collection('users').doc(user.uid).update({
-      downloadCount: firebase.firestore.FieldValue.increment(1)
-    });
-
-    // 실제 다운로드 시작
+    if (user) {
+      await db.collection('downloads').add({
+        userId: user.uid,
+        email: user.email,
+        platform: platform,
+        version: currentVersion,
+        downloadedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await db.collection('users').doc(user.uid).update({
+        downloadCount: firebase.firestore.FieldValue.increment(1)
+      });
+    }
     window.open(url, '_blank');
-
   } catch (e) {
     console.error('다운로드 오류:', e);
-    // 에러가 나도 다운로드는 시도
     window.open(url, '_blank');
   }
 }
 
 // 로그인 상태에 따라 UI 전환
 auth.onAuthStateChanged((user) => {
-  if (user) {
-    document.getElementById('loginRequired').style.display = 'none';
-    document.getElementById('downloadSection').style.display = 'block';
-  } else {
-    document.getElementById('loginRequired').style.display = 'block';
-    document.getElementById('downloadSection').style.display = 'none';
-  }
+  document.getElementById('loginRequired').style.display = 'none';
+  document.getElementById('downloadSection').style.display = 'block';
 });
 
 // 초기화
