@@ -17,11 +17,12 @@ const ADMIN_EMAILS = [
 
 // 다운로드 URL 기본값 — GitHub Releases (public repo)
 const RELEASES_BASE = "https://github.com/johunsang/makeke-releases/releases/download";
+const RELEASES_BASE_WIN = "https://github.com/johunsang/makeke-releases-win/releases/download";
 
 const DEFAULT_DOWNLOAD_URLS = {
-  macOS: `${RELEASES_BASE}/v1.1.78/Makeke-mac-v1.1.78.zip`,
-  "macOS-intel": `${RELEASES_BASE}/v1.1.78/Makeke-mac-intel-v1.1.78.zip`,
-  windows: `${RELEASES_BASE}/v1.1.78/Makeke-win-v1.1.78.exe`
+  macOS: `${RELEASES_BASE}/v1.1.79/Makeke-mac-v1.1.79.zip`,
+  "macOS-intel": `${RELEASES_BASE}/v1.1.79/Makeke-mac-intel-v1.1.79.zip`,
+  windows: `${RELEASES_BASE_WIN}/v1.1.79/Makeke-win-v1.1.79.exe`
 };
 
 // 현재 버전 기본값 (Firestore config 컬렉션에 저장된 값이 우선)
