@@ -563,6 +563,12 @@ td {
       <h3>사용자 추가</h3>
       <div style="display:flex;gap:8px;margin-bottom:16px;">
         <input type="email" id="shortsNewEmail" placeholder="이메일 입력" style="flex:1;padding:10px 14px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;font-size:14px;">
+        <select id="shortsDays" style="padding:10px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;font-size:14px;">
+          <option value="7">7일</option>
+          <option value="30" selected>30일</option>
+          <option value="90">90일</option>
+          <option value="365">1년</option>
+        </select>
         <button onclick="addShortsUser()" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">승인</button>
       </div>
     </div>

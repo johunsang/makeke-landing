@@ -549,13 +549,18 @@ async function loadShortsUsers() {
     tbody.innerHTML = snapshot.docs.map(doc => {
       const d = doc.data();
       const date = d.grantedAt ? new Date(d.grantedAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
-      const statusBadge = d.status === 'active'
-        ? '<span style="color:#34c759;font-weight:700;">승인</span>'
-        : '<span style="color:#ff9500;font-weight:700;">대기</span>';
+      const expires = d.expiresAt ? new Date(d.expiresAt.seconds * 1000) : null;
+      const expired = expires && expires < new Date();
+      const expiresText = expires ? expires.toLocaleDateString('ko-KR') : '무제한';
+      const statusBadge = expired
+        ? '<span style="color:#ff3b30;font-weight:700;">만료</span>'
+        : d.status === 'active'
+          ? '<span style="color:#34c759;font-weight:700;">승인</span>'
+          : '<span style="color:#ff9500;font-weight:700;">대기</span>';
       return `<tr>
         <td>${escapeHtmlAdmin(d.email)}</td>
         <td>${date}</td>
-        <td>${statusBadge}</td>
+        <td>${statusBadge} <span style="font-size:11px;color:rgba(0,0,0,0.4);">${expiresText}까지</span></td>
         <td>
           ${d.status === 'pending' ? `<button onclick="approveShortsUser('${doc.id}')" style="padding:4px 12px;background:#34c759;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">승인</button>` : ''}
           <button onclick="revokeShortsUser('${doc.id}')" style="padding:4px 12px;background:#ff3b30;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">해제</button>
@@ -570,17 +575,19 @@ async function loadShortsUsers() {
 async function addShortsUser() {
   const email = document.getElementById('shortsNewEmail').value.trim();
   if (!email) return alert('이메일을 입력하세요.');
+  const days = parseInt(document.getElementById('shortsDays').value) || 30;
+  const expiresAt = new Date(Date.now() + days * 86400000);
 
-  const apiKey = generateShortsApiKey();
   await db.collection('shorts_captain_access').doc(email).set({
     email,
     status: 'active',
-    apiKey,
+    days,
+    expiresAt,
     grantedAt: firebase.firestore.FieldValue.serverTimestamp(),
     grantedBy: firebase.auth().currentUser?.email || 'admin'
   });
   document.getElementById('shortsNewEmail').value = '';
-  alert(`승인 완료!\n\nAPI 키: ${apiKey}\n\n사용자에게 이 키를 전달하세요.`);
+  alert('승인 완료!\n이메일: ' + email + '\n기한: ' + days + '일 (' + expiresAt.toLocaleDateString('ko-KR') + '까지)');
   loadShortsUsers();
 }
 
@@ -591,7 +598,8 @@ async function approveShortsUser(docId) {
     apiKey,
     grantedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-  alert(`승인 완료! API 키: ${apiKey}`);
+  const link = `http://13.209.80.54:8801/?token=${apiKey}`;
+  prompt('승인 완료! 링크를 전달하세요:', link);
   loadShortsUsers();
 }
 
