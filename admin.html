@@ -351,6 +351,7 @@ td {
     <button class="admin-tab" data-tab="config" onclick="switchTab('config')">설정</button>
     <button class="admin-tab" data-tab="notices" onclick="switchTab('notices')">공지사항</button>
     <button class="admin-tab" data-tab="cs" onclick="switchTab('cs')">CS 관리</button>
+    <button class="admin-tab" data-tab="shorts" onclick="switchTab('shorts')">쇼츠대장</button>
   </div>
 
   <!-- ===== 사용자 패널 ===== -->
@@ -545,6 +546,40 @@ td {
     </div>
   </div>
 </div>
+
+  <!-- ===== 쇼츠대장 권한 패널 ===== -->
+  <div id="panel-shorts" class="admin-panel">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-number" id="shortsAuthorizedCount">0</div>
+        <div class="stat-label">승인된 사용자</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="shortsPendingCount">0</div>
+        <div class="stat-label">대기중</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>사용자 추가</h3>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input type="email" id="shortsNewEmail" placeholder="이메일 입력" style="flex:1;padding:10px 14px;border:1px solid rgba(0,0,0,0.1);border-radius:8px;font-size:14px;">
+        <button onclick="addShortsUser()" style="padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">승인</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>승인된 사용자 목록</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>이메일</th><th>승인일</th><th>상태</th><th>관리</th></tr>
+          </thead>
+          <tbody id="shortsUsersTableBody">
+            <tr><td colspan="4" style="text-align:center;padding:24px;color:rgba(0,0,0,0.4);">로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>

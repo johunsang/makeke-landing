@@ -22,6 +22,7 @@ auth.onAuthStateChanged(async (user) => {
   loadConfig();
   loadNotices();
   loadCSTickets();
+  loadShortsUsers();
 });
 
 // ────────────────────────────────────────
@@ -522,4 +523,87 @@ document.addEventListener('click', (e) => {
 function escapeHtmlAdmin(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ────────────────────────────────────────
+// 쇼츠대장 권한 관리
+// ────────────────────────────────────────
+async function loadShortsUsers() {
+  const tbody = document.getElementById('shortsUsersTableBody');
+  const countEl = document.getElementById('shortsAuthorizedCount');
+  const pendingEl = document.getElementById('shortsPendingCount');
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:rgba(0,0,0,0.4);">로딩 중...</td></tr>';
+
+  try {
+    const snapshot = await db.collection('shorts_captain_access').orderBy('grantedAt', 'desc').get();
+    const active = snapshot.docs.filter(d => d.data().status === 'active');
+    const pending = snapshot.docs.filter(d => d.data().status === 'pending');
+    countEl.textContent = active.length;
+    pendingEl.textContent = pending.length;
+
+    if (snapshot.empty) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:rgba(0,0,0,0.4);">승인된 사용자가 없습니다</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = snapshot.docs.map(doc => {
+      const d = doc.data();
+      const date = d.grantedAt ? new Date(d.grantedAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
+      const statusBadge = d.status === 'active'
+        ? '<span style="color:#34c759;font-weight:700;">승인</span>'
+        : '<span style="color:#ff9500;font-weight:700;">대기</span>';
+      return `<tr>
+        <td>${escapeHtmlAdmin(d.email)}</td>
+        <td>${date}</td>
+        <td>${statusBadge}</td>
+        <td>
+          ${d.status === 'pending' ? `<button onclick="approveShortsUser('${doc.id}')" style="padding:4px 12px;background:#34c759;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">승인</button>` : ''}
+          <button onclick="revokeShortsUser('${doc.id}')" style="padding:4px 12px;background:#ff3b30;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">해제</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:red;">${e.message}</td></tr>`;
+  }
+}
+
+async function addShortsUser() {
+  const email = document.getElementById('shortsNewEmail').value.trim();
+  if (!email) return alert('이메일을 입력하세요.');
+
+  const apiKey = generateShortsApiKey();
+  await db.collection('shorts_captain_access').doc(email).set({
+    email,
+    status: 'active',
+    apiKey,
+    grantedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    grantedBy: firebase.auth().currentUser?.email || 'admin'
+  });
+  document.getElementById('shortsNewEmail').value = '';
+  alert(`승인 완료!\n\nAPI 키: ${apiKey}\n\n사용자에게 이 키를 전달하세요.`);
+  loadShortsUsers();
+}
+
+async function approveShortsUser(docId) {
+  const apiKey = generateShortsApiKey();
+  await db.collection('shorts_captain_access').doc(docId).update({
+    status: 'active',
+    apiKey,
+    grantedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  alert(`승인 완료! API 키: ${apiKey}`);
+  loadShortsUsers();
+}
+
+async function revokeShortsUser(docId) {
+  if (!confirm('이 사용자의 쇼츠대장 접근 권한을 해제하시겠습니까?')) return;
+  await db.collection('shorts_captain_access').doc(docId).delete();
+  loadShortsUsers();
+}
+
+function generateShortsApiKey() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let key = 'sc_';
+  for (let i = 0; i < 32; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+  return key;
 }
