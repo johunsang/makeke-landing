@@ -12,14 +12,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="마케케 - 오늘 쓸 마케팅 콘텐츠를 만드는 AI 작업실">
 <meta property="og:description" content="블로그, 카드뉴스, SNS, 만화, 상세페이지, 광고 영상, 디자인을 한 곳에서 만들고 바로 복사·다운로드·기록하세요.">
-<meta property="og:image" content="https://makeke.kr/images/captures/makeke-actual-results.png">
+<meta property="og:image" content="https://makeke.kr/images/showcase/makeke-result-wall.png">
 <meta property="og:url" content="https://makeke.kr/">
 <meta property="og:site_name" content="마케케">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="마케케 - 오늘 쓸 마케팅 콘텐츠를 만드는 AI 작업실">
 <meta name="twitter:description" content="글, 이미지, 디자인, 광고 영상을 실제 화면에서 만들고 복사·다운로드·히스토리로 관리하세요.">
-<meta name="twitter:image" content="https://makeke.kr/images/captures/makeke-actual-results.png">
+<meta name="twitter:image" content="https://makeke.kr/images/showcase/makeke-result-wall.png">
 <link rel="icon" type="image/png" href="images/logo-icon.png">
 <link rel="apple-touch-icon" href="images/logo-icon.png">
 <script type="application/ld+json">
@@ -137,8 +137,9 @@ img{max-width:100%;display:block}
   padding:112px 34px 52px;
   color:#fff;
   background:
-    linear-gradient(115deg, rgba(30,30,30,.94) 0%, rgba(43,58,74,.9) 48%, rgba(30,30,30,.72) 100%),
-    radial-gradient(circle at 78% 28%, rgba(255,140,0,.35), transparent 30%);
+    radial-gradient(circle at 72% 18%, rgba(255,140,0,.22), transparent 28%),
+    radial-gradient(circle at 28% 88%, rgba(59,130,246,.2), transparent 32%),
+    linear-gradient(135deg, #12161c 0%, #26313d 50%, #111417 100%);
 }
 .hero::after{
   content:"";
@@ -147,14 +148,6 @@ img{max-width:100%;display:block}
   height:1px;
   background:rgba(255,255,255,.16);
   z-index:2;
-}
-#hero-three{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:0;
-  opacity:.82;
 }
 .hero-noise{
   position:absolute;
@@ -225,35 +218,37 @@ h1{
 .hero-shot{
   position:relative;
   min-height:620px;
-  perspective:1200px;
 }
-.hero-window{
-  position:absolute;
+.hero-showcase{
+  position:relative;
   overflow:hidden;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.2);
-  background:rgba(255,255,255,.08);
-  box-shadow:0 30px 90px rgba(0,0,0,.36);
-  backdrop-filter:blur(18px);
-  transform-style:preserve-3d;
-  will-change:transform;
+  height:620px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.16);
+  background:#111;
+  box-shadow:0 34px 100px rgba(0,0,0,.42);
 }
-.hero-window img{width:100%;height:100%;object-fit:cover;object-position:left top}
-.hero-window.main{inset:80px 0 44px 80px;transform:rotateY(-13deg) rotateX(6deg) translateZ(0)}
-.hero-window.side-a{width:42%;height:28%;left:0;top:0;transform:rotateY(14deg) rotateX(4deg) translateZ(70px)}
-.hero-window.side-b{width:38%;height:24%;right:18px;bottom:0;transform:rotateY(-9deg) rotateX(-5deg) translateZ(110px)}
-.hero-chip{
+.hero-showcase img{width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-showcase figcaption{
   position:absolute;
-  z-index:4;
-  right:26px;
-  top:24px;
-  padding:10px 14px;
+  left:22px;
+  bottom:22px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.hero-showcase figcaption span{
+  display:inline-flex;
+  align-items:center;
+  min-height:36px;
+  padding:0 13px;
   border-radius:999px;
-  background:rgba(255,140,0,.94);
+  background:rgba(17,20,23,.72);
+  border:1px solid rgba(255,255,255,.16);
   color:#fff;
   font-size:12px;
   font-weight:950;
-  box-shadow:0 14px 36px rgba(255,140,0,.28);
+  backdrop-filter:blur(14px);
 }
 .section{padding:86px 34px}
 .section.alt{background:var(--soft)}
@@ -347,6 +342,56 @@ h2{
 .shot-card figcaption{padding:18px 20px}
 .shot-card h3{font-size:18px;margin-bottom:6px}
 .shot-card p{color:var(--muted);font-size:14px}
+.result-showcase{
+  position:relative;
+  overflow:hidden;
+  background:#101318;
+  color:#fff;
+}
+.result-showcase::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 75% 18%, rgba(255,140,0,.22), transparent 28%),
+    radial-gradient(circle at 18% 82%, rgba(59,130,246,.18), transparent 30%),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:auto,auto,58px 58px,58px 58px;
+  pointer-events:none;
+}
+.result-showcase .inner{position:relative;z-index:1}
+.result-showcase .section-head p{color:rgba(255,255,255,.68)}
+.result-wall{
+  overflow:hidden;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 34px 100px rgba(0,0,0,.42);
+  background:#111;
+  margin-bottom:20px;
+}
+.result-wall img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.result-gallery{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+}
+.mini-result-card{
+  overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+  box-shadow:0 18px 48px rgba(0,0,0,.22);
+}
+.mini-result-card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#fff}
+.mini-result-card.wide{grid-column:span 2}
+.mini-result-card.wide img{aspect-ratio:16/9}
+.mini-result-card figcaption{
+  padding:12px 14px;
+  color:rgba(255,255,255,.78);
+  font-size:13px;
+  font-weight:900;
+}
 .portfolio-grid{
   display:grid;
   grid-template-columns:1.15fr .85fr;
@@ -695,16 +740,17 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
   .nav-links{display:none}
   .hero,.section,.download{padding-left:22px;padding-right:22px}
   .hero-grid,.section-head,.cols-2,.cols-3,.cols-4,.feature-detail,.feature-detail:nth-child(even),.manual-box,.steps,.brand-system,.portfolio-grid,.portfolio-strip{grid-template-columns:1fr}
+  .result-gallery{grid-template-columns:repeat(2,1fr)}
+  .mini-result-card.wide{grid-column:span 1}
   .feature-detail:nth-child(even) .feature-copy{order:0}
   .hero-shot{min-height:420px}
-  .hero-window.main{inset:80px 0 36px 24px}
-  .hero-window.side-a{width:52%;height:30%}
-  .hero-window.side-b{display:none}
+  .hero-showcase{height:420px}
 }
 @media (max-width:560px){
   .nav-actions .btn:not(.primary){display:none}
   h1{font-size:40px}
   .trust-row{grid-template-columns:1fr}
+  .result-gallery{grid-template-columns:1fr}
   .compare,.compare tbody,.compare tr,.compare th,.compare td{display:block;width:100%}
   .compare thead{display:none}
   .brand-board{min-height:auto;padding:24px}
@@ -738,7 +784,6 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
 
 <main id="top">
   <section class="hero">
-    <canvas id="hero-three" aria-hidden="true"></canvas>
     <div class="hero-noise" aria-hidden="true"></div>
     <div class="inner hero-grid">
       <div>
@@ -757,10 +802,14 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
         </div>
       </div>
       <figure class="hero-shot">
-        <div class="hero-chip">실제 앱 화면</div>
-        <div class="hero-window side-a"><img src="images/results/result-cardnews-ai-coding.png" alt="마케케 카드뉴스 실제 생성 결과"></div>
-        <div class="hero-window main"><img src="images/captures/makeke-actual-results.png" alt="마케케 실제 생성 결과 화면"></div>
-        <div class="hero-window side-b"><img src="images/results/result-video-owner.jpg" alt="마케케 광고 영상 실제 결과"></div>
+        <div class="hero-showcase">
+          <img src="images/showcase/makeke-result-mosaic.png" alt="마케케 실제 생성 이미지와 영상 결과 모자이크">
+          <figcaption>
+            <span>실제 생성 이미지</span>
+            <span>카드뉴스·블로그·만화·영상</span>
+            <span>원본 결과 기반</span>
+          </figcaption>
+        </div>
       </figure>
     </div>
   </section>
@@ -831,6 +880,33 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
         <figure class="shot-card"><img loading="lazy" src="images/captures/comic-agent.png" alt="만화 생성 화면"><figcaption><h3>만화</h3><p>어려운 메시지를 컷이 있는 이야기로 쉽게 풀어냅니다.</p></figcaption></figure>
         <figure class="shot-card"><img loading="lazy" src="images/captures/detailpage-agent.png" alt="상세페이지 생성 화면"><figcaption><h3>상세페이지</h3><p>상품, 강의, 서비스, 병원, 매장 소개를 설득력 있게 펼칩니다.</p></figcaption></figure>
         <figure class="shot-card"><img loading="lazy" src="images/captures/basic-history.png" alt="기본 콘텐츠 기록 화면"><figcaption><h3>기록</h3><p>만든 결과를 잃어버리지 않고 다시 꺼내 씁니다.</p></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section result-showcase" id="visual-results">
+    <div class="inner">
+      <div class="section-head">
+        <div>
+          <span class="label">실제 생성 이미지</span>
+          <h2>결과물이 많아질수록, 마케케의 가치가 더 잘 보입니다.</h2>
+        </div>
+        <p>블로그 대표 이미지, 카드뉴스, 만화, 영상 썸네일까지 실제 생성 결과를 한 화면에 모았습니다. 소개 문구보다 먼저 결과를 보고 판단할 수 있게 구성했습니다.</p>
+      </div>
+      <figure class="result-wall">
+        <img loading="lazy" src="images/showcase/makeke-result-wall.png" alt="마케케가 실제 생성한 이미지와 영상 결과 모음">
+      </figure>
+      <div class="result-gallery" aria-label="마케케 실제 생성 이미지 갤러리">
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/result-cardnews-ai-coding.png" alt="AI 코딩 에이전트 카드뉴스"><figcaption>카드뉴스</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/more/cardnews-choice-01.png" alt="가격보다 중요한 선택 기준 카드뉴스"><figcaption>선택 기준 카드</figcaption></figure>
+        <figure class="mini-result-card wide"><img loading="lazy" src="images/results/more/blog-before-after.png" alt="전후 비교 블로그 이미지"><figcaption>블로그 대표 이미지</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/result-comic-story.png" alt="만화 이미지"><figcaption>만화 이미지</figcaption></figure>
+        <figure class="mini-result-card wide"><img loading="lazy" src="images/results/more/blog-business-intro.png" alt="업종 소개 블로그 이미지"><figcaption>업종 소개 이미지</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/more/cardnews-faq-01.png" alt="FAQ 카드뉴스"><figcaption>FAQ 카드</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/result-cardnews-growth.png" alt="성장 카드뉴스"><figcaption>성과 공유 카드</figcaption></figure>
+        <figure class="mini-result-card wide"><img loading="lazy" src="images/results/more/comic-kongi-full.png" alt="콩이 만화 전체 컷"><figcaption>스토리 만화</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/result-video-owner.jpg" alt="광고 영상 썸네일"><figcaption>광고 영상</figcaption></figure>
+        <figure class="mini-result-card"><img loading="lazy" src="images/results/result-video-ai-marketing.jpg" alt="자동화 영상 썸네일"><figcaption>자동화 영상</figcaption></figure>
       </div>
     </div>
   </section>
@@ -1180,84 +1256,19 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
     <a href="https://open.kakao.com/o/gKnM0lpi" target="_blank" rel="noopener noreferrer">오픈카톡</a>
   </nav>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 (function(){
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function initThree(){
-    const canvas = document.getElementById('hero-three');
-    if (!canvas || !window.THREE || reduceMotion) return;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
-    camera.position.set(0, 0.2, 8);
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    const group = new THREE.Group();
-    scene.add(group);
-    const orange = new THREE.MeshStandardMaterial({ color:0xff8c00, metalness:.45, roughness:.28, emissive:0x552100, emissiveIntensity:.18 });
-    const navy = new THREE.MeshStandardMaterial({ color:0x2b3a4a, metalness:.32, roughness:.34 });
-    const blue = new THREE.MeshStandardMaterial({ color:0x3b82f6, metalness:.28, roughness:.3, emissive:0x0c2c6b, emissiveIntensity:.14 });
-    const white = new THREE.MeshStandardMaterial({ color:0xf4f6f8, metalness:.12, roughness:.42 });
-    const geomBox = new THREE.BoxGeometry(1.2, .72, .16);
-    const geomSphere = new THREE.SphereGeometry(.13, 24, 24);
-    const nodes = [];
-    const positions = [
-      [-2.4, .7, 0],[-1.35,-.2,.45],[-.35,.85,-.25],[.85,.05,.55],[1.9,.75,-.15],[2.6,-.3,.25],
-      [-2.0,-1.0,.15],[-.75,-1.25,.5],[.55,-1.05,-.2],[1.55,-.85,.35]
-    ];
-    positions.forEach((p,i)=>{
-      const mesh = new THREE.Mesh(i % 3 === 0 ? geomBox : geomSphere, [orange, navy, blue, white][i % 4]);
-      mesh.position.set(p[0], p[1], p[2]);
-      mesh.rotation.set(i*.18, i*.24, i*.09);
-      group.add(mesh);
-      nodes.push(mesh);
-    });
-    const lineMaterial = new THREE.LineBasicMaterial({ color:0xff8c00, transparent:true, opacity:.42 });
-    for(let i=0;i<positions.length-1;i++){
-      const points = [new THREE.Vector3(...positions[i]), new THREE.Vector3(...positions[i+1])];
-      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), lineMaterial);
-      group.add(line);
-    }
-    scene.add(new THREE.AmbientLight(0xffffff, .9));
-    const key = new THREE.DirectionalLight(0xffffff, 1.7);
-    key.position.set(4,5,6);
-    scene.add(key);
-    const rim = new THREE.PointLight(0xff8c00, 2.4, 12);
-    rim.position.set(-3,-2,3);
-    scene.add(rim);
-    function resize(){
-      const rect = canvas.getBoundingClientRect();
-      renderer.setSize(rect.width, rect.height, false);
-      camera.aspect = rect.width / Math.max(rect.height, 1);
-      camera.updateProjectionMatrix();
-    }
-    window.addEventListener('resize', resize);
-    resize();
-    let raf = 0;
-    function render(t){
-      const time = t * .001;
-      group.rotation.y = Math.sin(time*.32) * .18 - .42;
-      group.rotation.x = Math.sin(time*.23) * .08;
-      nodes.forEach((node,i)=>{
-        node.position.y += Math.sin(time + i) * .0018;
-        node.rotation.y += .004 + i*.00025;
-      });
-      renderer.render(scene,camera);
-      raf = requestAnimationFrame(render);
-    }
-    raf = requestAnimationFrame(render);
-    document.addEventListener('visibilitychange',()=>{ if(document.hidden) cancelAnimationFrame(raf); else raf=requestAnimationFrame(render); });
-  }
   function initGsap(){
     if (!window.gsap || reduceMotion) return;
     if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
     gsap.from('.hero .eyebrow, .hero h1, .hero p, .hero-actions, .trust', {
       y:28, autoAlpha:0, duration:.8, stagger:.08, ease:'power3.out'
     });
-    gsap.from('.hero-window', {
-      y:36, rotationY:0, autoAlpha:0, duration:1.1, stagger:.12, ease:'power3.out', delay:.15
+    gsap.from('.hero-showcase', {
+      y:32, autoAlpha:0, duration:1, ease:'power3.out', delay:.12
     });
     gsap.to('.marquee-track', { xPercent:-50, duration:22, repeat:-1, ease:'none' });
     if (window.ScrollTrigger) {
@@ -1271,14 +1282,13 @@ details p{padding:0 20px 20px;color:var(--muted);font-size:14px}
           delay:(i % 3) * .035
         });
       });
-      gsap.to('.hero-window.main', {
-        y:-34,
+      gsap.to('.hero-showcase', {
+        y:-24,
         scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:true }
       });
     }
   }
   window.addEventListener('DOMContentLoaded', function(){
-    initThree();
     initGsap();
   });
 })();
