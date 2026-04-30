@@ -22,11 +22,7 @@ const RELEASES_BASE_WIN = "https://github.com/johunsang/makeke-releases-win/rele
 const DEFAULT_DOWNLOAD_URLS = {
   macOS: `${RELEASES_BASE}/v1.1.79/Makeke-mac-v1.1.79.zip`,
   "macOS-intel": `${RELEASES_BASE}/v1.1.79/Makeke-mac-intel-v1.1.79.zip`,
-<<<<<<< HEAD
   windows: `${RELEASES_BASE_WIN}/v1.1.79/Makeke-win-v1.1.79.exe`
-=======
-  windows: `${RELEASES_BASE}/v1.1.79/Makeke-win-v1.1.79.exe`
->>>>>>> a45b357f (landing: auto-update downloads to v1.1.79)
 };
 
 // 현재 버전 기본값 (Firestore config 컬렉션에 저장된 값이 우선)
