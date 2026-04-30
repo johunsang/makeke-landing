@@ -177,13 +177,8 @@ async function handleLoginSuccess(user, googleAccessToken = '') {
   }
   if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
   document.getElementById('closingMsg').style.display = 'block';
-  setStatus('로그인 성공! 서버 완료 화면으로 이동합니다.', 'success');
-  for (const target of getReturnTargets()) {
-    try {
-      window.location.replace(target);
-      return;
-    } catch {}
-  }
+  setStatus('로그인 성공! 이 탭을 닫아도 됩니다.', 'success');
+  setTimeout(function() { try { window.close(); } catch {} }, 1500);
 }
 
 async function finishRedirectLoginIfNeeded() {
