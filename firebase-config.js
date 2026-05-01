@@ -20,13 +20,13 @@ const RELEASES_BASE = "https://github.com/johunsang/makeke-releases/releases/dow
 const RELEASES_BASE_WIN = "https://github.com/johunsang/makeke-releases-win/releases/download";
 
 const DEFAULT_DOWNLOAD_URLS = {
-  macOS: `${RELEASES_BASE}/v1.1.79/Makeke-mac-v1.1.79.zip`,
-  "macOS-intel": `${RELEASES_BASE}/v1.1.79/Makeke-mac-intel-v1.1.79.zip`,
-  windows: `${RELEASES_BASE_WIN}/v1.1.79/Makeke-win-v1.1.79.exe`
+  macOS: `${RELEASES_BASE}/v1.7.80/Makeke-mac-v1.7.80.zip`,
+  "macOS-intel": `${RELEASES_BASE}/v1.7.80/Makeke-mac-intel-v1.7.80.zip`,
+  windows: `${RELEASES_BASE_WIN}/v1.7.80/Makeke-win-v1.7.80.exe`
 };
 
 // 현재 버전 기본값 (Firestore config 컬렉션에 저장된 값이 우선)
-const DEFAULT_VERSION = "1.1.79";
+const DEFAULT_VERSION = "1.7.80";
 
 // ============================================================
 // Firebase 초기화
