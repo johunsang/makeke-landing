@@ -6,225 +6,96 @@
 <title>마케케 로그인</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif; background: #f5f5f7; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-  .card { background: #fff; border-radius: 24px; padding: 48px 40px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); text-align: center; max-width: 400px; width: 100%; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(180deg, #fff8ef 0%, #f5f5f7 100%);
+    color: #1c1c1e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  .card {
+    width: min(420px, 100%);
+    padding: 42px 34px;
+    border: 1px solid rgba(255,140,0,0.16);
+    border-radius: 24px;
+    background: rgba(255,255,255,0.94);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.08);
+    text-align: center;
+  }
   .logo { font-size: 32px; font-weight: 900; color: #ff8c00; margin-bottom: 8px; }
-  .subtitle { font-size: 14px; color: rgba(0,0,0,0.4); margin-bottom: 32px; }
-  .btn-google { display: inline-flex; align-items: center; gap: 12px; padding: 14px 32px; background: #fff; border: 1px solid rgba(0,0,0,0.12); border-radius: 12px; font-size: 15px; font-weight: 600; color: #1c1c1e; cursor: pointer; transition: all 0.2s; }
-  .btn-google:hover { background: #f8f8f8; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .btn-google img { width: 20px; height: 20px; }
-  .status { margin-top: 24px; font-size: 13px; color: rgba(0,0,0,0.4); }
-  .status.success { color: #34c759; font-weight: 700; }
-  .status.error { color: #ff3b30; }
-  .user-info { margin-top: 20px; display: none; padding: 16px; background: rgba(255,140,0,0.06); border-radius: 12px; }
-  .user-info img { width: 48px; height: 48px; border-radius: 50%; margin-bottom: 8px; }
-  .user-info .name { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-  .user-info .email { font-size: 12px; color: rgba(0,0,0,0.4); }
-  .closing-msg { margin-top: 16px; font-size: 13px; color: #ff8c00; font-weight: 600; display: none; }
+  .subtitle { font-size: 14px; color: rgba(0,0,0,0.5); margin-bottom: 28px; line-height: 1.55; }
+  .btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 50px;
+    padding: 14px 22px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff8c00, #ff6b00);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 26px rgba(255,107,0,0.22);
+  }
+  .btn:disabled { opacity: 0.7; cursor: wait; }
+  .status {
+    margin-top: 18px;
+    padding: 13px 14px;
+    border-radius: 14px;
+    background: rgba(255,140,0,0.07);
+    color: #b55300;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .hint { margin-top: 14px; font-size: 12px; color: rgba(0,0,0,0.38); line-height: 1.5; }
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">마케케</div>
-  <div class="subtitle">앱에서 사용할 계정으로 로그인하세요</div>
+  <main class="card">
+    <div class="logo">마케케</div>
+    <div class="subtitle">Google 로그인으로 마케케 계정을 연결합니다.</div>
+    <a class="btn" id="loginBtn" href="https://makeke.kr/api/auth/login-url?port=8818&app=1">Google 계정으로 로그인</a>
+    <div class="status" id="status">버튼을 누르면 Google 로그인 화면으로 이동합니다.</div>
+    <div class="hint">로그인 후 앱으로 자동 연결됩니다. 연결이 늦으면 앱 화면으로 돌아가 잠시 기다려주세요.</div>
+  </main>
 
-  <button class="btn-google" id="loginBtn" onclick="doLogin()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-    Google 계정으로 로그인
-  </button>
-
-  <div class="user-info" id="userInfo">
-    <img id="userPhoto" src="" alt="">
-    <div class="name" id="userName"></div>
-    <div class="email" id="userEmail"></div>
-  </div>
-
-  <div class="status" id="status"></div>
-  <div class="closing-msg" id="closingMsg">앱으로 돌아갑니다...</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://makeke.kr/firebase-config.js"></script>
 <script>
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({ prompt: 'select_account' });
-let _loginInFlight = false;
-
-function ensureLocalHttp() {
-  const host = String(window.location.hostname || '').toLowerCase();
-  const isLocalHost = host === '127.0.0.1' || host === 'localhost';
-  if (isLocalHost && window.location.protocol === 'https:') {
-    const nextUrl = `http://${host}${window.location.port ? `:${window.location.port}` : ''}${window.location.pathname}${window.location.search}${window.location.hash}`;
-    window.location.replace(nextUrl);
-    return true;
-  }
-  return false;
-}
-
 function getRequestedPort() {
-  return new URLSearchParams(window.location.search).get('port') || window.location.port || '8818';
+  return new URLSearchParams(window.location.search).get("port") || "8818";
 }
 
-function getCallbackTargets() {
-  const callbackPort = getRequestedPort();
-  return [
-    `http://127.0.0.1:${callbackPort}/api/auth/callback`,
-    `http://localhost:${callbackPort}/api/auth/callback`,
-  ];
+function setStatus(message) {
+  document.getElementById("status").textContent = message;
 }
 
-function getReturnTargets() {
-  const callbackPort = getRequestedPort();
-  return [
-    `http://127.0.0.1:${callbackPort}/app-auth-return?port=${callbackPort}`,
-    `http://localhost:${callbackPort}/app-auth-return?port=${callbackPort}`,
-  ];
+function getSessionId() {
+  return new URLSearchParams(window.location.search).get("session_id") || `app-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function setStatus(message, type = '') {
-  const status = document.getElementById('status');
-  status.className = type ? `status ${type}` : 'status';
-  status.textContent = message || '';
+function startLogin() {
+  const btn = document.getElementById("loginBtn");
+  btn.setAttribute("aria-disabled", "true");
+  btn.textContent = "Google 로그인으로 이동 중...";
+  setStatus("Google 로그인 화면으로 이동합니다.");
+  const port = encodeURIComponent(getRequestedPort());
+  const sessionId = encodeURIComponent(getSessionId());
+  window.location.href = `https://makeke.kr/api/auth/login-url?session_id=${sessionId}&port=${port}&app=1`;
 }
 
-function setLoginButtonBusy(isBusy) {
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = !!isBusy;
-  btn.textContent = isBusy ? 'Google 로그인 페이지 여는 중...' : 'Google 계정으로 로그인';
-}
-
-function getGoogleAccessToken(result) {
-  try {
-    const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-    return credential?.accessToken || '';
-  } catch {
-    return '';
-  }
-}
-
-async function handleLoginSuccess(user, googleAccessToken = '') {
-  const token = await user.getIdToken();
-  const callbackPayload = {
-    token,
-    googleAccessToken,
-    refreshToken: user.refreshToken || '',
-    uid: user.uid,
-    email: user.email,
-    name: user.displayName || '',
-    photoURL: user.photoURL || '',
-    profileData: {
-    emailVerified: !!user.emailVerified,
-    phoneNumber: user.phoneNumber || '',
-    providerIds: (user.providerData || []).map((item) => item?.providerId || '').filter(Boolean),
-    providers: (user.providerData || []).map((item) => ({
-      providerId: item?.providerId || '',
-      uid: item?.uid || '',
-      email: item?.email || '',
-      displayName: item?.displayName || '',
-      photoURL: item?.photoURL || '',
-    })),
-    metadata: {
-      creationTime: user.metadata?.creationTime || '',
-      lastSignInTime: user.metadata?.lastSignInTime || '',
-    },
-    },
-  };
-
-  await db.collection('users').doc(user.uid).set({
-    uid: user.uid,
-    email: user.email,
-    name: user.displayName || '',
-    photoURL: user.photoURL || '',
-    loginAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-
-  await db.collection('app_tokens').doc(user.uid).set({
-    token,
-    googleAccessToken,
-    email: user.email,
-    name: user.displayName || '',
-    photoURL: user.photoURL || '',
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-
-  document.getElementById('userInfo').style.display = 'block';
-  document.getElementById('userPhoto').src = user.photoURL || '';
-  document.getElementById('userName').textContent = user.displayName || '';
-  document.getElementById('userEmail').textContent = user.email;
-  document.getElementById('loginBtn').style.display = 'none';
-  setStatus('로그인 성공!', 'success');
-
-  let callbackOk = false;
-  let lastError = null;
-  for (const callbackUrl of getCallbackTargets()) {
-    try {
-      const callbackRes = await fetch(callbackUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(callbackPayload),
-      });
-      if (!callbackRes.ok) {
-        const err = await callbackRes.json().catch(() => ({}));
-        throw new Error(err?.detail || err?.error || '앱 로그인 저장 실패');
-      }
-      callbackOk = true;
-      break;
-    } catch (err) {
-      lastError = err;
-    }
-  }
-  if (!callbackOk) throw lastError || new Error('앱 로그인 저장 실패');
-  document.getElementById('closingMsg').style.display = 'block';
-  setStatus('로그인 성공! 이 탭을 닫아도 됩니다.', 'success');
-  setTimeout(function() { try { window.close(); } catch {} }, 1500);
-}
-
-async function finishRedirectLoginIfNeeded() {
-  try {
-    const result = await auth.getRedirectResult();
-    if (result?.user) {
-      setLoginButtonBusy(true);
-      setStatus('로그인 결과를 확인하는 중...');
-      await handleLoginSuccess(result.user, getGoogleAccessToken(result));
-    }
-  } catch (error) {
-    setStatus('로그인 실패: ' + (error.message || error), 'error');
-    setLoginButtonBusy(false);
-  }
-}
-
-async function doLogin() {
-  if (_loginInFlight) return;
-  _loginInFlight = true;
-  setStatus('로그인 중...');
-  setLoginButtonBusy(true);
-
-  try {
-    const result = await auth.signInWithPopup(provider);
-    if (!result?.user) {
-      throw new Error('로그인 결과를 확인할 수 없습니다.');
-    }
-    await handleLoginSuccess(result.user, getGoogleAccessToken(result));
-  } catch(error) {
-    if (error.code === 'auth/popup-blocked') {
-      setStatus('브라우저 팝업이 차단되어 전체 페이지 로그인으로 전환합니다...');
-      await auth.signInWithRedirect(provider);
-      return;
-    }
-    if (error.code !== 'auth/popup-closed-by-user') {
-      setStatus('로그인 실패: ' + (error.message || error), 'error');
-    }
-    setLoginButtonBusy(false);
-    _loginInFlight = false;
-  }
-}
-
-(async () => {
-  if (ensureLocalHttp()) return;
-  await finishRedirectLoginIfNeeded();
-})();
+const loginBtn = document.getElementById("loginBtn");
+loginBtn.href = `https://makeke.kr/api/auth/login-url?port=${encodeURIComponent(getRequestedPort())}&app=1`;
+loginBtn.onclick = function(event) {
+  event.preventDefault();
+  startLogin();
+};
 </script>
 </body>
 </html>
