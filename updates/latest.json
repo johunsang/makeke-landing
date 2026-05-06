@@ -1,16 +1,16 @@
 {
-  "version": "1.7.82",
+  "version": "1.7.83",
   "notes": "",
   "macOS": {
-    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.7.82/Makeke-mac-v1.7.82.zip",
-    "fileName": "Makeke-mac-v1.7.82.zip"
+    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.7.83/Makeke-mac-v1.7.83.zip",
+    "fileName": "Makeke-mac-v1.7.83.zip"
   },
   "macOS-intel": {
-    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.7.82/Makeke-mac-intel-v1.7.82.zip",
-    "fileName": "Makeke-mac-intel-v1.7.82.zip"
+    "url": "https://github.com/johunsang/makeke-releases/releases/download/v1.7.83/Makeke-mac-intel-v1.7.83.zip",
+    "fileName": "Makeke-mac-intel-v1.7.83.zip"
   },
   "windows": {
-    "url": "https://github.com/johunsang/makeke-releases-win/releases/download/v1.7.82/Makeke-win-v1.7.82.exe",
-    "fileName": "Makeke-win-v1.7.82.exe"
+    "url": "https://github.com/johunsang/makeke-releases-win/releases/download/v1.7.83/Makeke-win-v1.7.83.exe",
+    "fileName": "Makeke-win-v1.7.83.exe"
   }
 }
